@@ -1,0 +1,38 @@
+# List the start up tasks. Learn more https://www.gitpod.io/docs/config-start-tasks/
+tasks:
+  - init: |
+      pip install awscli
+      read -p "Enter Your AWS Profile: " AWS_ID
+      aws configure --profile $AWS_ID
+      export AWS_PROFILE=$AWS_ID
+    command: |
+      echo -n "Will you create AWS policy and role for lambda？ [Y/n]: "
+      read ANS
+      case $ANS in
+        "" | [Yy]* )
+          read -p "Enter Your Role Name: " AWS_ROLE_NAME
+          read -p "Enter Your Role Name: " AWS_S3POLICY_NAME
+          aws iam create-role --role-name $AWS_ROLE_NAME --assume-role-policy-document file://policyDocument_lambda.json
+          aws iam create-policy --policy-name $AWS_S3POLICY_NAME --policy-document file://policyDocument_s3put.json --output ARN_S3 
+          aws iam list-policies --scope Local | grep -5 $AWS_S3POLICY_NAME
+          ARN_S3=$(aws iam list-policies --query 'Policies[?PolicyName==`$AWS_S3POLICY_NAME`].Arn' --output text)
+          aws iam attach-role-policy --role-name $AWS_ROLE_NAME --policy-arn $ARN_S3
+          ;;
+        * )
+          echo "No"
+          ;;
+      esac
+  - init: check the configure
+    command: |
+      aws iam list-users --query 'Users[].UserName'
+      aws iam list-groups-for-user --user-name $AWS_ID --query 'Groups[].GroupName'
+      aws iam list-policies --scope AWS
+      aws iam list-policies --scope Local
+      aws iam list-policies --only-attached
+      aws iam list-roles
+    openMode: split-right
+
+# List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
+ports:
+  - port: 3000
+    onOpen: open-preview
