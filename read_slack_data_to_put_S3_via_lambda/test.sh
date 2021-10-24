@@ -27,13 +27,21 @@ zip -r for_upload.zip lambda_function.py slack_sdk*
 read -p "Enter Your Lambda Function Name: " AWS_LAMBDA_NAME
 
 GET_ARN_ROLE=$(eval "aws iam list-roles --query 'Roles[?RoleName==\`"$AWS_ROLE_NAME"\`].Arn' --output text")
+echo $GET_ARN_ROLE
                
 # lambda functionを作成
-aws lambda create-function --function-name $AWS_LAMBDA_NAME \
+eval "aws lambda create-function \
+--function-name "$AWS_LAMBDA_NAME" \
 --zip-file fileb://for_upload.zip \
---role "$GET_ARN_ROLE" \
+--role '"$GET_ARN_ROLE"' \
 --runtime python3.8 \
---timeout 900\
---handler lambda_function.lambda_handler
+--timeout 900 \
+--handler lambda_function.lambda_handler"
+# aws lambda create-function --function-name $AWS_LAMBDA_NAME \
+# --zip-file fileb://for_upload.zip \
+# --role "$GET_ARN_ROLE" \
+# --runtime python3.8 \
+# --timeout 900 \
+# --handler lambda_function.lambda_handler
 rm for_upload.zip
 rm lambda_function.py

@@ -7,6 +7,7 @@ tasks:
       aws configure --profile $AWS_ID
       export AWS_PROFILE=$AWS_ID
     command: |
+      pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
       echo -n "Will you create AWS policy and role for lambda？ [Y/n]: "
       read ANS
       case $ANS in
@@ -21,7 +22,7 @@ tasks:
       read ANS
       case $ANS in
         "" | [Yy]* )
-          sh configure_iam/example_lambda_role_with_S3Put.sh
+          sh read_slack_data_to_put_S3_via_lambda/test.sh
           ;;
         * )
           echo "No"
@@ -31,7 +32,6 @@ tasks:
   - name: Check AWS roles, install slackweb package for example, etc.
     command: |
       gp sync-await aws-setting
-      pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
       aws iam list-users --query 'Users[].UserName'
       aws iam list-groups-for-user --user-name $AWS_ID --query 'Groups[].GroupName'
       aws iam list-policies --scope AWS
