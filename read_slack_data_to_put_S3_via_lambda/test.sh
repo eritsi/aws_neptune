@@ -9,6 +9,8 @@ read -p "Enter Your slack channel code: " SLACK_CHANNEL_CODE
 read -p "Enter Your S3 Bucket Name to store json data: " BUCKET_NAME
 read -p "Enter Your json file Name (with .json): " JSON_FILE_NAME
 
+read -p "Enter Your Role Name: " AWS_ROLE_NAME
+
 eval "cat lambda_function_example.py | \
 sed -e 's/{SLACK_API_TOKEN}/"$SLACK_API_TOKEN"/g' \
 -e 's/{SLACK_CHANNEL_CODE}/"$SLACK_CHANNEL_CODE"/g' \
@@ -25,7 +27,7 @@ zip -r for_upload.zip lambda_function.py slack_sdk*
 read -p "Enter Your Lambda Function Name: " AWS_LAMBDA_NAME
 
 GET_ARN_ROLE=$(eval "aws iam list-roles --query 'Roles[?RoleName==\`"$AWS_ROLE_NAME"\`].Arn' --output text")
-
+               
 # lambda functionを作成
 aws lambda create-function --function-name $AWS_LAMBDA_NAME \
 --zip-file fileb://for_upload.zip \

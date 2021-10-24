@@ -17,6 +17,16 @@ tasks:
           echo "No"
           ;;
       esac
+      echo -n "Will you create lambda function？ [Y/n]: "
+      read ANS
+      case $ANS in
+        "" | [Yy]* )
+          sh configure_iam/example_lambda_role_with_S3Put.sh
+          ;;
+        * )
+          echo "No"
+          ;;
+      esac
       gp sync-done aws-setting
   - name: Check AWS roles, install slackweb package for example, etc.
     command: |
