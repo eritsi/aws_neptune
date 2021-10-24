@@ -1,6 +1,7 @@
 # List the start up tasks. Learn more https://www.gitpod.io/docs/config-start-tasks/
 tasks:
-  - init: |
+  - name: Install aws-cli and configure. Create a sample roles & policies
+    init: |
       pip install awscli
       read -p "Enter Your AWS Profile: " AWS_ID
       aws configure --profile $AWS_ID
@@ -10,20 +11,17 @@ tasks:
       read ANS
       case $ANS in
         "" | [Yy]* )
-          read -p "Enter Your Role Name: " AWS_ROLE_NAME
-          read -p "Enter Your Policy Name: " AWS_S3POLICY_NAME
-          aws iam create-role --role-name $AWS_ROLE_NAME --assume-role-policy-document file://policyDocument_lambda.json
-          aws iam create-policy --policy-name $AWS_S3POLICY_NAME --policy-document file://policyDocument_s3put.json
-          aws iam list-policies --scope Local | grep -5 $AWS_S3POLICY_NAME
-          ARN_S3=$(eval "aws iam list-policies --query 'Policies[?PolicyName==\`"$AWS_S3POLICY_NAME"\`].Arn' --output text")
-          aws iam attach-role-policy --role-name $AWS_ROLE_NAME --policy-arn $ARN_S3
+          sh configure_iam/example_lambda_role_with_S3Put.sh
           ;;
         * )
           echo "No"
           ;;
       esac
-  - init: check the configure
+      gp sync-done aws-setting
+  - name: Check AWS roles, install slackweb package for example, etc.
     command: |
+      gp sync-await aws-setting
+      pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
       aws iam list-users --query 'Users[].UserName'
       aws iam list-groups-for-user --user-name $AWS_ID --query 'Groups[].GroupName'
       aws iam list-policies --scope AWS
@@ -33,6 +31,6 @@ tasks:
     openMode: split-right
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
-ports:
-  - port: 3000
-    onOpen: open-preview
+# ports:
+#   - port: 3000
+#     onOpen: open-preview
