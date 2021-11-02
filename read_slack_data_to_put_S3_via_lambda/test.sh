@@ -45,3 +45,18 @@ eval "aws lambda create-function \
 # --handler lambda_function.lambda_handler
 rm for_upload.zip
 rm lambda_function.py
+
+echo "Lambda function created. Executing..."
+eval "aws lambda invoke --function-name "$AWS_LAMBDA_NAME" test.log"
+
+echo -n "Will you clean lambda function？ [Y/n]: "
+      read ANS
+      case $ANS in
+        "" | [Yy]* )
+          eval "aws lambda delete-function --function-name "$AWS_LAMBDA_NAME
+
+          ;;
+        * )
+          echo "No"
+          ;;
+      esac
