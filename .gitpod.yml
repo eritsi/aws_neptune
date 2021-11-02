@@ -19,8 +19,8 @@ tasks:
           ;;
       esac
       echo -n "Will you create lambda function？ [Y/n]: "
-      read ANS
-      case $ANS in
+      read ANS2
+      case $ANS2 in
         "" | [Yy]* )
           sh read_slack_data_to_put_S3_via_lambda/test.sh
           ;;
