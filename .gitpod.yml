@@ -28,17 +28,15 @@ tasks:
           echo "No"
           ;;
       esac
-      gp sync-done aws-setting
-  - name: Check AWS roles, install slackweb package for example, etc.
-    command: |
-      gp sync-await aws-setting
+      aws configure
       aws iam list-users --query 'Users[].UserName'
       aws iam list-groups-for-user --user-name $AWS_ID --query 'Groups[].GroupName'
       aws iam list-policies --scope AWS
       aws iam list-policies --scope Local
       aws iam list-policies --only-attached
       aws iam list-roles
-    openMode: split-right
+      read -p "Enter Your SageMaker Notebook Name: " NOTE_ID
+      aws sagemaker create-presigned-notebook-instance-url --notebook-instance-name $NOTE_ID
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 # ports:
