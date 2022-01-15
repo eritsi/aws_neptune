@@ -39,46 +39,6 @@ tasks:
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
       DB_RES = `aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"``
       
-      echo "Create NoteBook on SageMaker and connect to Neptune2
-      # ARNは取り急ぎ既存の使い回し
-      NOTE_ID = "aws-neptune-nb-${NEP_CLUS}"
-      read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
-      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --instance-type "ml.t3.medium" --role-arn $NOTE_ARN
-      aws sagemaker create-presigned-notebook-instance-url \
-      --root-access disabled \
-      --notebook-instance-name $NOTE_ID \
-      --tags [
-        {
-          "Key": "aws-neptune-cluster-id",
-          "Value": $NEP_CLUS
-        },
-        {
-          "Key": "aws-neptune-resource-id",
-          "Value": $DB_RES
-        }
-      ]
-    command: |
-      pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
-      echo -n "Will you create AWS policy and role for lambda？ [Y/n]: "
-      read ANS
-      case $ANS in
-        "" | [Yy]* )
-          sh configure_iam/example_lambda_role_with_S3Put.sh
-          ;;
-        * )
-          echo "No"
-          ;;
-      esac
-      echo -n "Will you create lambda function？ [Y/n]: "
-      read ANS2
-      case $ANS2 in
-        "" | [Yy]* )
-          sh read_slack_data_to_put_S3_via_lambda/test.sh
-          ;;
-        * )
-          echo "No"
-          ;;
-      esac
     openMode: split-right
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
