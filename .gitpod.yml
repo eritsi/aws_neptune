@@ -20,6 +20,9 @@ tasks:
       aws iam list-roles | jq ".Roles[].RoleName"
       # ユーザー入力を変数に保持
       read -p "Enter Your Neptune cluster name: " NEP_CLUS
+      # 変数と文字列の連結
+      NEP_INST = "${NEP_CLUS}-cluster"
+      read -p "Enter Your Neptune Role ARN: " NEP_ARN
       gp sync-done aws-role-policy
     openMode: split-right
   - name: Create Neptune Cluster & Instance 
