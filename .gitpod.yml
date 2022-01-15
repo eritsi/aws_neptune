@@ -21,13 +21,14 @@ tasks:
       # ユーザー入力を変数に保持
       read -p "Enter Your Neptune cluster name: " NEP_CLUS
       # 変数と文字列の連結
-      NEP_INST = ${NEP_CLUS}-cluster
+      # NEP_INST = ${NEP_CLUS}-cluster
       read -p "Enter Your Neptune Role ARN: " NEP_ARN
       aws neptune create-db-cluster --db-cluster-identifier $NEP_CLUS --engine neptune
-      aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier $NEP_INST --db-instance-class db.t3.medium
+      aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier ${NEP_CLUS}-cluster --db-instance-class db.t3.medium
       aws neptune add-role-to-db-cluster --db-cluster-identifier $NEP_CLUS --role-arn $NEP_ARN
       aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS
-      aws neptune describe-db-instances --db-instance-identifier $NEP_INST
+      aws neptune describe-db-instances --db-instance-identifier ${NEP_CLUS}-cluster
+      DB_RES = `aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
       gp sync-done aws-role-policy
     openMode: split-right
   - name: Create Neptune Cluster & Instance 
@@ -47,7 +48,7 @@ tasks:
       aws neptune describe-db-instances --db-instance-identifier $NEP_INST
       # 実行結果を変数に保持
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
-      DB_RES = `aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"``
+      DB_RES = `aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
       gp sync-done aws-neptune
     openMode: split-right
   - name: Create NoteBook on SageMaker and connect to Neptune
