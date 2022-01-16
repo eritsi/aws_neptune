@@ -43,6 +43,14 @@ tasks:
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
       DB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
       echo "Neptune DB's Resource ID : $DB_RES"
+      gp sync-done aws-neptune
+    openMode: split-right
+  - name: Create NoteBook on SageMaker and connect to Neptune
+    init: |
+      gp sync-await aws-neptune
+      source ~/.bashrc
+      aws configure
+     
       NOTE_ID="aws-neptune-nb-${NEP_CLUS}"
       echo "Now creating Notebook for Neptune : $DB_RES"
       read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
