@@ -18,7 +18,6 @@ tasks:
       aws iam list-policies --scope Local | jq ".Policies[].PolicyName"
       aws iam list-policies --only-attached | jq ".Policies[].PolicyName"
       aws iam list-roles | jq ".Roles[].RoleName"
-      
       gp sync-done aws-role-policy
     openMode: split-right
   - name: Create Neptune Cluster & Instance 
@@ -28,7 +27,6 @@ tasks:
       aws configure
       # ユーザー入力を変数に保持
       read -p "Enter Your Neptune cluster name: " NEP_CLUS
-      
       # 変数と文字列の連結
       NEP_INST="${NEP_CLUS}-instance"
       NEP_CLUST="${NEP_CLUS}-cluster"
@@ -41,7 +39,6 @@ tasks:
       echo "Role is attached."
       aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS
       aws neptune describe-db-instances --db-instance-identifier ${NEP_CLUS}-cluster
-      
       # 実行結果を変数に保持
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
       DB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
