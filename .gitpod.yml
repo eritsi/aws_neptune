@@ -53,7 +53,7 @@ tasks:
       echo "Neptune DB's Resource ID : $DB_RES"
       # LifeCycleを作るためにEndPoint URLを得る
       DB_EP=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].Endpoint"`
-      cat life_cycle_for_neptune_nb.sh | sed -e 's/{HOST_URL}/"'$DB_EP'/g' >> lifecycle.txt
+      cat life_cycle_for_neptune_nb.sh | sed -e 's/{HOST_URL}/'$DB_EP'/g' >> lifecycle.txt
       # ここから、実際にLifeCycleを作成するのは現状お手手
       
       # Create Notebook on SageMaker     
