@@ -30,12 +30,15 @@ tasks:
       read -p "Enter Your Neptune cluster name: " NEP_CLUS
       
       # 変数と文字列の連結
-      # NEP_INST="${NEP_CLUS}-cluster"
+      NEP_INST="${NEP_CLUS}-instance"
+      NEP_CLUST="${NEP_CLUS}-cluster"
       read -p "Enter Your Neptune Role ARN: " NEP_ARN
       aws neptune create-db-cluster --db-cluster-identifier $NEP_CLUS --engine neptune
       aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier ${NEP_CLUS}-cluster --db-instance-class db.t3.medium
+      echo "waiting for the end of creation of the instance..."
       aws neptune wait db-instance-available --db-instance-identifier ${NEP_CLUS}-cluster
       aws neptune add-role-to-db-cluster --db-cluster-identifier $NEP_CLUS --role-arn $NEP_ARN
+      echo "Role is attached."
       aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS
       aws neptune describe-db-instances --db-instance-identifier ${NEP_CLUS}-cluster
       
