@@ -11,7 +11,7 @@ tasks:
       read -p "Enter Your AWS Profile: " AWS_ID
       aws configure --profile $AWS_ID
       export AWS_PROFILE=$AWS_ID
-      aws configure
+      # aws configure
       aws iam list-users --query 'Users[].UserName'
       aws iam list-groups-for-user --user-name $AWS_ID --query 'Groups[].GroupName'
       # aws iam list-policies --scope AWS
@@ -35,12 +35,15 @@ tasks:
       read -p "Enter Your Neptune Role ARN: " NEP_ARN
       aws neptune create-db-cluster --db-cluster-identifier $NEP_CLUS --engine neptune
       aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier ${NEP_CLUS}-cluster --db-instance-class db.t3.medium
+      
+      # Wait for the end of creation
       sleep 300; echo "waiting for the end of creation of the instance..."
-      aws neptune wait db-instance-available --db-instance-identifier ${NEP_CLUS}-cluster
+      aws neptune wait db-instance-available --db-instance-identifier $NEP_INST
       aws neptune add-role-to-db-cluster --db-cluster-identifier $NEP_CLUS --role-arn $NEP_ARN
       echo "Role is attached."
       aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS
-      aws neptune describe-db-instances --db-instance-identifier ${NEP_CLUS}-cluster
+      aws neptune describe-db-instances --db-instance-identifier $NEP_INST
+      
       # 実行結果を変数に保持
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
       DB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
@@ -51,6 +54,10 @@ tasks:
       echo "Now creating Notebook for Neptune : $DB_RES"
       read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
       aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$DB_RES"
+      
+      # Wait for the end of creation
+      sleep 120; echo "waiting for the end of creation of the notebook..."
+      aws sagemaker wait notebook-instance-in-service --notebook-instance-name $NOTE_ID
       aws sagemaker create-presigned-notebook-instance-url --notebook-instance-name $NOTE_ID
     command: |
       pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
