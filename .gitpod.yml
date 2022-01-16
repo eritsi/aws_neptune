@@ -32,9 +32,10 @@ tasks:
       # 変数と文字列の連結
       NEP_INST="${NEP_CLUS}-instance"
       NEP_CLUS="${NEP_CLUS}-cluster"
-      read -p "Enter Your Neptune Role ARN: " NEP_ARN
+      # ARNは現状、既存のものを使う
+      read -p "Enter Your Neptune Role ARN: [aws neptune describe-db-clusters --db-cluster-identifier xxx]" NEP_ARN
       aws neptune create-db-cluster --db-cluster-identifier $NEP_CLUS --engine neptune
-      aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier ${NEP_CLUS}-cluster --db-instance-class db.t3.medium
+      aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier $NEP_INST --db-instance-class db.t3.medium
       
       # Wait for the end of creation
       sleep 300; echo "waiting for the end of creation of the instance..."
@@ -50,12 +51,19 @@ tasks:
       NB_SUB=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].DBSubnetGroup.Subnets[0].SubnetIdentifier"`
       NB_VPC=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].VpcSecurityGroups[].VpcSecurityGroupId"`
       echo "Neptune DB's Resource ID : $DB_RES"
+      # LifeCycleを作るためにEndPoint URLを得る
+      DB_EP=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].Endpoint"`
+      cat life_cycle_for_neptune_nb.sh | sed -e 's/{HOST_URL}/"'$DB_EP'/g' >> lifecycle.txt
+      # ここから、実際にLifeCycleを作成するのは現状お手手
       
       # Create Notebook on SageMaker     
       NOTE_ID="aws-neptune-nb-${NEP_CLUS}"
-      echo "Now creating Notebook for Neptune : $N  B_RES"
-      read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
-      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --subnet-id $NB_SUB --security-group-ids $NB_VPC --default-code-repository "https://github.com/aws/graph-notebook/tree/main/src/graph_notebook/notebooks" --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
+      echo "Now creating Notebook for Neptune : $NB_RES"
+      # ARNは現状、既存のものを使う
+      read -p "Enter Your Notebook Role ARN: [aws sagemaker describe-notebook-instance --notebook-instance-name yyy]" NOTE_ARN
+      read -p "Enter Your LifeCycle Name: " LC_NAME
+      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --lifecycle-config-name $LC_NAME --subnet-id $NB_SUB --security-group-ids $NB_VPC --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
+      # aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --subnet-id $NB_SUB --security-group-ids $NB_VPC --default-code-repository "https://github.com/aws/graph-notebook/tree/main/src/graph_notebook/notebooks" --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
       
       # Wait for the end of creation
       sleep 120; echo "waiting for the end of creation of the notebook..."
