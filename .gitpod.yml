@@ -25,11 +25,13 @@ tasks:
       gp sync-await aws-role-policy
       source ~/.bashrc
       aws configure
+      
+      # Create Neptune
       # ユーザー入力を変数に保持
       read -p "Enter Your Neptune cluster name: " NEP_CLUS
       # 変数と文字列の連結
       NEP_INST="${NEP_CLUS}-instance"
-      NEP_CLUST="${NEP_CLUS}-cluster"
+      NEP_CLUS="${NEP_CLUS}-cluster"
       read -p "Enter Your Neptune Role ARN: " NEP_ARN
       aws neptune create-db-cluster --db-cluster-identifier $NEP_CLUS --engine neptune
       aws neptune create-db-instance --db-cluster-identifier $NEP_CLUS --engine neptune --db-instance-identifier ${NEP_CLUS}-cluster --db-instance-class db.t3.medium
@@ -43,28 +45,13 @@ tasks:
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
       DB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
       echo "Neptune DB's Resource ID : $DB_RES"
-      gp sync-done aws-neptune
-    openMode: split-right
-  - name: Create NoteBook on SageMaker and connect to Neptune
-    init: |
-      gp sync-await aws-neptune
-      source ~/.bashrc
-      aws configure
-     
+      
+      # Create Notebook on SageMaker     
       NOTE_ID="aws-neptune-nb-${NEP_CLUS}"
       echo "Now creating Notebook for Neptune : $DB_RES"
       read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
-      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --instance-type "ml.t3.medium" --role-arn $NOTE_ARN
-      aws sagemaker create-presigned-notebook-instance-url --root-access disabled --notebook-instance-name $NOTE_ID --tags [
-        {
-          "Key": "aws-neptune-cluster-id",
-          "Value": $NEP_CLUS
-        },
-        {
-          "Key": "aws-neptune-resource-id",
-          "Value": $DB_RES
-        }
-      ]
+      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$DB_RES"
+      aws sagemaker create-presigned-notebook-instance-url --notebook-instance-name $NOTE_ID
     command: |
       pip install -t read_slack_data_to_put_S3_via_lambda slack_sdk --no-user
       echo -n "Will you create AWS policy and role for lambda？ [Y/n]: "
