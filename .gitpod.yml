@@ -46,14 +46,16 @@ tasks:
       
       # 実行結果を変数に保持
       # json返り値の特定のkeyのvalueを取り出す。"を外すための -r オプション
-      DB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
+      NB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
+      NB_SUB=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].DBSubnetGroup.Subnets[0].SubnetIdentifier"`
+      NB_VPC=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].VpcSecurityGroups[].VpcSecurityGroupId"`
       echo "Neptune DB's Resource ID : $DB_RES"
       
       # Create Notebook on SageMaker     
       NOTE_ID="aws-neptune-nb-${NEP_CLUS}"
-      echo "Now creating Notebook for Neptune : $DB_RES"
+      echo "Now creating Notebook for Neptune : $N  B_RES"
       read -p "Enter Your Notebook Policy ARN: " NOTE_ARN
-      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$DB_RES"
+      aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --subnet-id $NB_SUB --security-group-ids $NB_VPC --default-code-repository "https://github.com/aws/graph-notebook/tree/main/src/graph_notebook/notebooks" --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
       
       # Wait for the end of creation
       sleep 120; echo "waiting for the end of creation of the notebook..."
