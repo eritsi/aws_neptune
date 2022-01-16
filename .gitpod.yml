@@ -50,7 +50,7 @@ tasks:
       NB_RES=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].DbClusterResourceId"`
       NB_SUB=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].DBSubnetGroup.Subnets[0].SubnetIdentifier"`
       NB_VPC=`aws neptune describe-db-instances --db-instance-identifier $NEP_INST | jq -r ".DBInstances[].VpcSecurityGroups[].VpcSecurityGroupId"`
-      echo "Neptune DB's Resource ID : $DB_RES"
+      echo "Neptune DB's Resource ID : $NB_RES"
       # LifeCycleを作るためにEndPoint URLを得る
       DB_EP=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].Endpoint"`
       cat life_cycle_for_neptune_nb.sh | sed -e 's/{HOST_URL}/'$DB_EP'/g' >> lifecycle.txt
