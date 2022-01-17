@@ -54,14 +54,16 @@ tasks:
       # LifeCycleを作るためにEndPoint URLを得る
       DB_EP=`aws neptune describe-db-clusters --db-cluster-identifier $NEP_CLUS | jq -r ".DBClusters[].Endpoint"`
       cat life_cycle_for_neptune_nb.sh | sed -e 's/{HOST_URL}/'$DB_EP'/g' >> lifecycle.txt
-      # ここから、実際にLifeCycleを作成するのは現状お手手
+      # ここから、実際にLifeCycleを作成する
+      read -p "Enter Your LC Name to create(hyphen is allowed): " LC_NAME
+      aws sagemaker create-notebook-instance-lifecycle-config --notebook-instance-lifecycle-config-name $LC_NAME --on-start Content="`(cat ./lifecycle.txt || echo "")|base64`"
+
       
       # Create Notebook on SageMaker     
       NOTE_ID="aws-neptune-nb-${NEP_CLUS}"
       echo "Now creating Notebook for Neptune : $NB_RES"
       # ARNは現状、既存のものを使う
       read -p "Enter Your Notebook Role ARN: [aws sagemaker describe-notebook-instance --notebook-instance-name yyy]" NOTE_ARN
-      read -p "Enter Your LifeCycle Name: " LC_NAME
       aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --lifecycle-config-name $LC_NAME --subnet-id $NB_SUB --security-group-ids $NB_VPC --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
       # aws sagemaker create-notebook-instance --notebook-instance-name $NOTE_ID --subnet-id $NB_SUB --security-group-ids $NB_VPC --default-code-repository "https://github.com/aws/graph-notebook/tree/main/src/graph_notebook/notebooks" --instance-type "ml.t3.medium" --role-arn $NOTE_ARN --root-access Disabled --tags Key="aws-neptune-cluster-id",Value="$NEP_CLUS" Key="aws-neptune-resource-id",Value="$NB_RES"
       
