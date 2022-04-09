@@ -4,6 +4,12 @@ tasks:
     init: |
       pip install awscli slack_sdk pandas
       gp sync-done aws-cli
+      # ipynb with R
+      pip install jupytext openpyxl optuna pandas_gbq scikit-learn lightgbm
+      jupyter notebook --generate-config
+      echo -e '\nc.NotebookApp.contents_manager_class = "jupytext.TextFileContentsManager"' >> ~/.jupyter/jupyter_notebook_config.py
+      echo -e '\nc.ContentsManager.default_jupytext_formats = "ipynb,py"' >> ~/.jupyter/jupyter_notebook_config.py
+      jupyter notebook --ip=*
   - name: new shell
     init: |
       gp sync-await aws-cli
