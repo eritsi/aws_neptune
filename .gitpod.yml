@@ -2,7 +2,7 @@
 tasks:
   - name: Install aws-cli and configure. Create a sample roles & policies
     init: |
-      pip install awscli
+      pip install awscli slack_sdk pandas
       gp sync-done aws-cli
   - name: new shell
     init: |
