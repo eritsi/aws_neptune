@@ -68,6 +68,10 @@ def plot_nx(posts):
     }
 
     pos = nx.spring_layout(G)
+    # pos = nx.circular_layout(G)
+    # pos = nx.kamada_kawai_layout(G)
+    # some other layouts 
+    # https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.kamada_kawai_layout.html
     edge_width = [d["value"] for (u, v, d) in G.edges(data=True)]
     nx.draw_networkx_edges(G, pos, width=edge_width)
     nx.draw_networkx(G, pos, **options)
