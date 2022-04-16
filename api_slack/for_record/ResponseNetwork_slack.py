@@ -35,7 +35,7 @@ with open('./res.json') as f:
 rep = []
 with open('./replies.json','w') as outfile:
     for thread_ts in temp.root_ts.drop_duplicates():
-        replies = client.conversations_replies(channel="C01PVCLAD0A", limit=1000, ts = thread_ts)
+        replies = client.conversations_replies(channel="SLACK_CHANNEL_CODE", limit=1000, ts = thread_ts)
         rep += replies['messages']
     json.dump(rep, outfile, indent=4, ensure_ascii=False)
 
@@ -60,5 +60,5 @@ with open('./replies.json') as f:
 test.to_csv('output.csv')
 f.close()
 outfile.close()
-os.remove('./res.json')
-os.remove('./replies.json')
+# os.remove('./res.json')
+# os.remove('./replies.json')
