@@ -53,7 +53,7 @@ def get_user_lists(client):
 def plot_nx(posts):
     test = posts.groupby(['parent_user_name', 'reply_user_name'],as_index=False).size().rename(columns={'size':'value'})
 
-    fig = plt.figure(figsize=(12,5))
+    fig = plt.figure(figsize=(24,10))
     G = nx.Graph()
     G.add_nodes_from(posts.parent_user_name.drop_duplicates().to_list())
     # G.add_edges_from([("k", "a", {"weight": 15}), ("n", "a", {"weight": 10}), ("k", "n", {"weight": 5})])
