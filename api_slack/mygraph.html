@@ -1,0 +1,125 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 500px;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": "U012DMZSBJ7", "label": "U012DMZSBJ7", "shape": "dot", "size": 10}, {"id": "U0179UVTBQU", "label": "U0179UVTBQU", "shape": "dot", "size": 10}, {"id": "U01HAAHNHAT", "label": "U01HAAHNHAT", "shape": "dot", "size": 10}, {"id": "U02D3LXJEGN", "label": "U02D3LXJEGN", "shape": "dot", "size": 10}, {"id": "U02P03KAEM9", "label": "U02P03KAEM9", "shape": "dot", "size": 10}, {"id": "UFLUZ76JX", "label": "UFLUZ76JX", "shape": "dot", "size": 10}, {"id": "ULHA84QT1", "label": "ULHA84QT1", "shape": "dot", "size": 10}, {"id": "UMX1CPD6Y", "label": "UMX1CPD6Y", "shape": "dot", "size": 10}, {"id": "U012S4U4449", "label": "U012S4U4449", "shape": "dot", "size": 10}, {"id": "U01705LTTSB", "label": "U01705LTTSB", "shape": "dot", "size": 10}, {"id": "U019DE4M562", "label": "U019DE4M562", "shape": "dot", "size": 10}, {"id": "UUM1N1QH2", "label": "UUM1N1QH2", "shape": "dot", "size": 10}, {"id": "U08PK4JK0", "label": "U08PK4JK0", "shape": "dot", "size": 10}, {"id": "URB2JTH0F", "label": "URB2JTH0F", "shape": "dot", "size": 10}, {"id": "UL7G5V86L", "label": "UL7G5V86L", "shape": "dot", "size": 10}, {"id": "UH7CLKTPT", "label": "UH7CLKTPT", "shape": "dot", "size": 10}, {"id": "U01HJ59J3KN", "label": "U01HJ59J3KN", "shape": "dot", "size": 10}, {"id": "UF2N9JF7H", "label": "UF2N9JF7H", "shape": "dot", "size": 10}, {"id": "UHU4P4YMB", "label": "UHU4P4YMB", "shape": "dot", "size": 10}, {"id": "UR3QXK32N", "label": "UR3QXK32N", "shape": "dot", "size": 10}, {"id": "U028Q4D8DMH", "label": "U028Q4D8DMH", "shape": "dot", "size": 10}, {"id": "USLACKBOT", "label": "USLACKBOT", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": "U012DMZSBJ7", "label": 1, "to": "U012DMZSBJ7", "value": 5, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "U0179UVTBQU", "value": 3, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "U02D3LXJEGN", "value": 1, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "U02P03KAEM9", "value": 1, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "UFLUZ76JX", "value": 1, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "ULHA84QT1", "value": 2, "weight": 1}, {"from": "U012DMZSBJ7", "label": 1, "to": "UMX1CPD6Y", "value": 7, "weight": 1}, {"from": "U0179UVTBQU", "label": 1, "to": "U0179UVTBQU", "value": 6, "weight": 1}, {"from": "U0179UVTBQU", "label": 1, "to": "UFLUZ76JX", "value": 1, "weight": 1}, {"from": "U0179UVTBQU", "label": 1, "to": "UMX1CPD6Y", "value": 5, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "U012S4U4449", "value": 1, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "U01705LTTSB", "value": 3, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "U019DE4M562", "value": 4, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "U01HAAHNHAT", "value": 5, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "UMX1CPD6Y", "value": 1, "weight": 1}, {"from": "U01HAAHNHAT", "label": 1, "to": "UUM1N1QH2", "value": 1, "weight": 1}, {"from": "U02D3LXJEGN", "label": 1, "to": "U02D3LXJEGN", "value": 3, "weight": 1}, {"from": "U02D3LXJEGN", "label": 1, "to": "U02P03KAEM9", "value": 4, "weight": 1}, {"from": "U02D3LXJEGN", "label": 1, "to": "UFLUZ76JX", "value": 1, "weight": 1}, {"from": "U02D3LXJEGN", "label": 1, "to": "ULHA84QT1", "value": 1, "weight": 1}, {"from": "U02D3LXJEGN", "label": 1, "to": "UMX1CPD6Y", "value": 2, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "U01705LTTSB", "value": 1, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "U02P03KAEM9", "value": 3, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "U08PK4JK0", "value": 1, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "UMX1CPD6Y", "value": 5, "weight": 1}, {"from": "U02P03KAEM9", "label": 1, "to": "URB2JTH0F", "value": 1, "weight": 1}, {"from": "UFLUZ76JX", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "UFLUZ76JX", "label": 1, "to": "UFLUZ76JX", "value": 3, "weight": 1}, {"from": "UFLUZ76JX", "label": 1, "to": "UL7G5V86L", "value": 1, "weight": 1}, {"from": "UFLUZ76JX", "label": 1, "to": "UMX1CPD6Y", "value": 2, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "U012S4U4449", "value": 1, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "U0179UVTBQU", "value": 2, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "UH7CLKTPT", "value": 1, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "UL7G5V86L", "value": 1, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "ULHA84QT1", "value": 2, "weight": 1}, {"from": "ULHA84QT1", "label": 1, "to": "UMX1CPD6Y", "value": 3, "weight": 1}, {"from": "UMX1CPD6Y", "label": 1, "to": "U01705LTTSB", "value": 1, "weight": 1}, {"from": "UMX1CPD6Y", "label": 1, "to": "U08PK4JK0", "value": 2, "weight": 1}, {"from": "UMX1CPD6Y", "label": 1, "to": "UMX1CPD6Y", "value": 23, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U012DMZSBJ7", "value": 1, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U012S4U4449", "value": 2, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U01705LTTSB", "value": 9, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U0179UVTBQU", "value": 1, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U019DE4M562", "value": 6, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U01HJ59J3KN", "value": 3, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "U08PK4JK0", "value": 3, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "UF2N9JF7H", "value": 1, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "UFLUZ76JX", "value": 1, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "UHU4P4YMB", "value": 2, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "ULHA84QT1", "value": 4, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "UR3QXK32N", "value": 3, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "URB2JTH0F", "value": 1, "weight": 1}, {"from": "U01705LTTSB", "label": 1, "to": "UUM1N1QH2", "value": 1, "weight": 1}, {"from": "U01HJ59J3KN", "label": 1, "to": "U01HJ59J3KN", "value": 1, "weight": 1}, {"from": "U01HJ59J3KN", "label": 1, "to": "UUM1N1QH2", "value": 1, "weight": 1}, {"from": "U08PK4JK0", "label": 1, "to": "U08PK4JK0", "value": 1, "weight": 1}, {"from": "UHU4P4YMB", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "UHU4P4YMB", "label": 1, "to": "UHU4P4YMB", "value": 1, "weight": 1}, {"from": "UUM1N1QH2", "label": 1, "to": "UR3QXK32N", "value": 2, "weight": 1}, {"from": "UUM1N1QH2", "label": 1, "to": "UUM1N1QH2", "value": 2, "weight": 1}, {"from": "U028Q4D8DMH", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "U028Q4D8DMH", "label": 1, "to": "URB2JTH0F", "value": 1, "weight": 1}, {"from": "UL7G5V86L", "label": 1, "to": "U08PK4JK0", "value": 1, "weight": 1}, {"from": "UL7G5V86L", "label": 1, "to": "UL7G5V86L", "value": 1, "weight": 1}, {"from": "USLACKBOT", "label": 1, "to": "U012DMZSBJ7", "value": 2, "weight": 1}, {"from": "USLACKBOT", "label": 1, "to": "U0179UVTBQU", "value": 1, "weight": 1}, {"from": "USLACKBOT", "label": 1, "to": "U01HAAHNHAT", "value": 1, "weight": 1}, {"from": "USLACKBOT", "label": 1, "to": "UMX1CPD6Y", "value": 2, "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics",
+            "nodes",
+            "edges"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
